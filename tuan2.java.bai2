@@ -1,0 +1,24 @@
+package com.example.a45195.tuannn2;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.os.Bundle;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
+import com.example.a45195.R;
+
+public class tuann22MainActivity extends AppCompatActivity {
+    ListView lv;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_tuann22_main);
+        lv.findViewById(R.id.tuann22listview);
+        String[] arr= new String[]{"Mon1","tan3","tt5","444","3fgg","gggg","3333","huyr"};
+        ArrayAdapter<String>
+                adapter=new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,arr);
+        lv.setAdapter(adapter);
+    }
+}
