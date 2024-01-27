@@ -1,0 +1,59 @@
+package com.example.a45195.tuan22kollin
+
+import android.content.Intent
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.view.View
+import android.widget.Button
+import android.widget.EditText
+import com.example.a45195.R
+
+class tuan22kolinMainActivity : AppCompatActivity() {
+    var txt1: EditText? = null
+    var txt2: EditText? = null
+    var btn1: Button? = null
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_tuan22kolin_main)
+        txt1=findViewById(R.id.tuan22kolintxt1);
+        txt2=findViewById(R.id.tuan22kolintxt2);
+        btn1=findViewById(R.id.tuan22kolinbtn1);
+        btn1!!.setOnClickListener(View.OnClickListener {
+            var i=Intent(this@tuan22kolinMainActivity,
+                    tuan22kolinsecondActivity::class.java)
+            i.putExtra("so1",txt1!!.text.toString())
+            i.putExtra("so2",txt2!!.text.toString())
+            startActivity(i)
+        })
+
+
+    }
+}
+
+
+
+----SECOND
+
+package com.example.a45195.tuan22kollin
+
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.widget.TextView
+import com.example.a45195.R
+
+class tuan22kolinsecondActivity : AppCompatActivity() {
+    var tv1:TextView? = null
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_tuan22kolinsecond)
+        tv1=findViewById(R.id.tuan2kolintv1)
+        var i1=intent
+        val chuoi1=i1.extras!!.getString("so1")
+        val chuoi2=i1.extras!!.getString("so2")
+        val so1=chuoi1!!.toFloat()
+        val so2=chuoi2!!.toFloat()
+        val tong=so1+so2
+        tv1!!.text=tong.toString()
+
+    }
+}
