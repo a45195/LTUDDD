@@ -1,0 +1,99 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Ung dung tinh tong',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+      ),
+      home: MyCal(), // Use MyCal instead of C
+    );
+  }
+}
+
+class MyCal extends StatefulWidget {
+  @override
+  _MyCalState createState() => _MyCalState();
+}
+
+class _MyCalState extends State<MyCal> {
+  TextEditingController numController1 = TextEditingController();
+  TextEditingController numController2 = TextEditingController();
+  String kq = '';
+
+  void tinhTong() {
+    double num1 = double.tryParse(numController1.text) ?? 0.0;
+    double num2 = double.tryParse(numController2.text) ?? 0.0;
+    double num = num1 + num2;
+
+    setState(() {
+      kq = 'Tong: $num';
+    });
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ResultScreen(kq)),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Ket Qua')),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: numController1,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: 'Nhap so 1'),
+            ),
+            TextField(
+              controller: numController2,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: 'Nhap so 2'),
+            ),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: tinhTong,
+              child: Text('Tinh tong'),
+            ),
+            SizedBox(height: 10),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ResultScreen extends StatelessWidget {
+  final String result;
+
+  ResultScreen(this.result);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Ket qua tinh tong')),
+      body: Center(
+        child: Container(
+          padding: EdgeInsets.all(20),
+          child: Text(
+            result,
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+        ),
+      ),
+    );
+  }
+}
