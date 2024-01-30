@@ -1,0 +1,205 @@
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+// Step 1: Design the model
+class Product {
+  String search_image;
+  String styleid;
+  String brands_filter_facet;
+  String price;
+  String product_additional_info;
+
+  Product({
+    required this.search_image,
+    required this.styleid,
+    required this.brands_filter_facet,
+    required this.price,
+    required this.product_additional_info,
+  });
+}
+
+// Step 2: Design the list screen
+class ProductListScreen extends StatefulWidget {
+  @override
+  ProductListScreenState createState() => ProductListScreenState();
+}
+
+// Step 3: Define the list screen - Fetch data from the server
+class ProductListScreenState extends State<ProductListScreen> {
+  late List<Product> products;
+
+  @override
+  void initState() {
+    super.initState();
+    products = [];
+    fetchProducts();
+  }
+
+  Future<void> fetchProducts() async {
+    final response = await http.get(Uri.parse("http://192.168.125.102/test/get.php"));
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      setState(() {
+        products = convertMapToList(data);
+      });
+    } else {
+      throw Exception("Không đọc được dữ liệu");
+    }
+  }
+
+  List<Product> convertMapToList(Map<String, dynamic> data) {
+    List<Product> productList = [];
+    data.forEach((key, value) {
+      for (int i = 0; i < value.length; i++) {
+        Product product = Product(
+          search_image: value[i]['search_image'] ?? '',
+          styleid: value[i]['styleid'] ?? '',
+          brands_filter_facet: value[i]['brands_filter_facet'] ?? '',
+          price: value[i]['price'] ?? '',
+          product_additional_info: value[i]['product_additional_info'] ?? '',
+        );
+        productList.add(product);
+      }
+    });
+    return productList;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Danh sách sản phẩm"),
+      ),
+      body: products != null
+          ? ListView.builder(
+        itemCount: products.length,
+        itemBuilder: (context, index) {
+          return ListTile(
+            title: Text(products[index].brands_filter_facet),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Price: ${products[index].price}'),
+                Text('product_additional_info: ${products[index].product_additional_info}'),
+              ],
+            ),
+            leading: Hero(
+              tag: 'product_image_${products[index].styleid}', // Use a unique identifier like styleid
+              child: Image.network(
+                products[index].search_image,
+                width: 50,
+                height: 50,
+                fit: BoxFit.cover,
+              ),
+            ),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProductDetailScreen(products[index]),
+                ),
+              );
+            },
+          );
+        },
+      )
+          : Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
+  }
+}
+
+class ProductDetailScreen extends StatelessWidget {
+  final Product product;
+
+  ProductDetailScreen(this.product);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Product Detail'),
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CartScreen()),
+              );
+            },
+            child: Icon(Icons.shopping_cart),
+            style: ElevatedButton.styleFrom(
+              shape: CircleBorder(),
+              padding: EdgeInsets.all(0),
+            ),
+          ),
+        ],
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: Text('Nhanh: ${product.brands_filter_facet}'),
+          ),
+          Hero(
+            tag: 'product_image_${product.styleid}', // Use a unique identifier like styleid
+            child: Image.network(product.search_image),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: Text(
+              'Info: ${product.product_additional_info}',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: Text('ID: ${product.styleid}'),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: Text('Price: ${product.price}'),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+// Step 5: Design the cart screen
+class CartScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Shopping Cart'),
+      ),
+      body: Center(
+        child: Text('Giỏ hàng của bạn'),
+      ),
+    );
+  }
+}
+
+// Step 6: Define the main application
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Danh sách sản phẩm',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.deepPurple),
+      ),
+      home: ProductListScreen(),
+    );
+  }
+}
